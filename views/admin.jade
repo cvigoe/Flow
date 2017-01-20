@@ -5,12 +5,12 @@ block content
       .col-md-2
       .col-md-8
         table(class="table table-hover", style="text-align: center;")
-          div(class="panel panel-default")
-            a(href="/")
+          div(class="panel panel-default", id="bootstrap-override")
+            a(href="/", id="bootstrap-override")
               div(class="panel-heading", style="text-align: center;")
                 h4=HospitalName + " Emergency Room Queue"
-            div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
-              form(action="", method="post")
+            form(action="", method="post")    
+              div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
                 button(type="submit", name="PatientStatus", value="1", class="btn btn-outline-primary") +OMEGA
                 button(type="submit", name="PatientStatus", value="2", class="btn btn-outline-secondary") +ALPHA
                 button(type="submit", name="PatientStatus", value="3", class="btn btn-outline-success") +BRAVO
@@ -20,16 +20,15 @@ block content
             thead
               tr
                 th(colspan=3, style="text-align: center; vertical-align: middle;") Recent Activity
-            tbody(id="bootstrap-override") 
-              tr
-                td(colspan=2)="Patient " + patients[0].PatientID + " added to queue"
-                td(colspan=1)= "Undo"
-              tr
-                td(colspan=2)="Patient " + patients[1].PatientID + " removed from queue"
-                td(colspan=1)= "Undo"
-              tr
-                td(colspan=2)="Patient " + patients[2].PatientID + " deleted from system"
-                td(colspan=1)= "Undo"
+            tbody(id="bootstrap-override")
+              for logentry in LogData
+                - var phrase;
+                - if(logentry.PreviousState == 'N' && logentry.NewState == 'A') phrase = " added to queue"
+                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'R') phrase = " removed from queue"
+                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'D') phrase = " deleted from system"
+                tr
+                  td(colspan=2)="Patient " + logentry.PatientID + phrase
+                  td(colspan=1)= "Undo"
             thead
               tr
                 th(style="text-align: center; vertical-align: middle;") Patient ID
@@ -44,9 +43,21 @@ block content
               -  else if(patient.PatientStatus == 5) token = "warning";
               -  else if(patient.PatientStatus == 6) token = "danger";
               tbody(id="bootstrap-override") 
-                tr
-                  td=patient.PatientID
-                  td=patient.WaitTimeStart
-                  td
-                    span(class="btn btn-outline-" + token)=patient.PatientStatus
+                form(action="", method="post")
+                  tr
+                    input(type="text", name="PatientID", value=patient.PatientID, style="display:none;")
+                    td(id="delete-override")
+                      button(type="submit", name="PatientStatus", value=patient.PatientStatus + 12, class="btn btn-outline-secondary delete")
+                        img(src="/images/clear.svg")
+                      span=" " + patient.PatientID
+                    td=patient.WaitTimeStart
+                    -  var urgency;
+                    -  if(patient.PatientStatus == 1) urgency = "OMEGA";
+                    -  else if(patient.PatientStatus == 2) urgency = "ALPHA";
+                    -  else if(patient.PatientStatus == 3) urgency = "BRAVO";
+                    -  else if(patient.PatientStatus == 4) urgency = "CHARLIE";
+                    -  else if(patient.PatientStatus == 5) urgency = "DELTA";
+                    -  else if(patient.PatientStatus == 6) urgency = "ECHO";
+                    td
+                      button(type="submit", name="PatientStatus", value=patient.PatientStatus + 6, class="btn btn-outline-" + token)="-" + urgency
     .col-md-2

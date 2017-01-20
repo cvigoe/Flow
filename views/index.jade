@@ -4,13 +4,11 @@ block content
     .row
       for hospital in data
         div(class="col-md-4")
-          div(class="panel panel-default")
+          div(class="panel panel-default", id="bootstrap-override")
             a(href=("/" + hospital.HospitalID))
               div(class="panel-heading", style="text-align: center;")
                 h4=hospital.HospitalName
             table(class="table table-hover", style="text-align: center;")
-
-
               thead
                 tr
                   th(style="text-align: center; vertical-align: middle;") Urgency Category
