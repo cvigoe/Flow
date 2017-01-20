@@ -1,0 +1,31 @@
+#bootstrap-override tr{
+  background-color: #f5f5f5;
+}
+
+
+#bootstrap-override tr:hover {
+  background-color: #f0f0f0;
+}
+
+table {
+  table-layout: fixed;
+}
+
+#bootstrap-override button{
+  /*padding: .5rem 0rem;*/
+  width: 95px;
+  float: initial;
+  font-size: 0.85rem;
+  padding: 0.5rem 0rem;
+}
+
+.btn-group {
+	float: initial;
+	display: block;
+	padding: 12px;
+}
+
+p {
+  margin-top: .5rem;
+  margin-bottom: 0.5rem;
+}

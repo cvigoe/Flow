@@ -1,0 +1,58 @@
+extends layout
+block content
+  .container
+    .row
+      for hospital in data
+        div(class="col-md-4")
+          div(class="panel panel-default")
+            a(href=("/" + hospital.HospitalID))
+              div(class="panel-heading", style="text-align: center;")
+                h4=hospital.HospitalName
+            table(class="table table-hover", style="text-align: center;")
+
+
+              thead
+                tr
+                  th(style="text-align: center; vertical-align: middle;") Urgency Category
+                  th(style="text-align: center; vertical-align: middle;") Incoming Patient Wait Time
+                  th(style="text-align: center; vertical-align: middle;") Patients in Waiting Room
+              tbody(id="bootstrap-override") 
+                tr
+                  td OMEGA
+                  td=hospital.OmegaTime
+                  td=hospital.OmegaPatients
+                tr
+                  td ALPHA
+                  td=hospital.AlphaTime
+                  td=hospital.OmegaPatients
+                tr
+                  td BRAVO
+                  td=hospital.BravoTime
+                  td=hospital.BravoPatients
+                tr
+                  td CHARILE
+                  td=hospital.CharlieTime
+                  td=hospital.CharliePatients
+                tr
+                  td DELTA
+                  td=hospital.DeltaTime
+                  td=hospital.DeltaPatients        
+                tr
+                  td ECHO
+                  td=hospital.EchoTime
+                  td=hospital.EchoPatients
+              thead
+                tr(style = "border-top-style: solid; border-top-width: 2px; border-top-color: #ddd")
+                  th(colspan=2) Total Patients in Waiting Room
+                  th(style="text-align: center;")=hospital.TotalPatients
+              thead
+                tr
+                  th(colspan=2) Total Staff on Duty
+                  th(style="text-align: center;")=hospital.Staff
+              thead
+                tr 
+                  th(colspan=2) Severity Adjusted Wait Time
+                  th(style="text-align: center;")=hospital.SAWTime              
+
+            div(class="panel-heading")
+            
