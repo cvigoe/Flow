@@ -55,3 +55,9 @@ position: absolute;
 #bootstrap-override a{
   text-decoration: none;
 }
+
+#clock{
+    float: right;
+    position: relative;
+    top: 18px;  
+}

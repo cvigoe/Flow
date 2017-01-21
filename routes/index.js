@@ -54,7 +54,7 @@ router.get('/:HospitalID', function (req, res, next) {
 			console.log("GET hospital admin page:\n\n")
 			console.log(rows0)
 		  	console.log(rows1)
-		  	connection.query('SELECT PatientID AS PatientID, PreviousState AS PreviousState, NewState AS NewState, COALESCE(DATE_FORMAT(LogTime, "%H:%i"), "-1") AS LogTime, UndoAction AS UndoAction, HospitalID AS HospitalID FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
+		  	connection.query('SELECT LogID AS LogID, PatientID AS PatientID, PreviousState AS PreviousState, NewState AS NewState, COALESCE(DATE_FORMAT(LogTime, "%H:%i"), "-1") AS LogTime, UndoAction AS UndoAction, HospitalID AS HospitalID FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' AND UndoAction = False ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
 		  		console.log("\n\nSENT LOG DATA:\n\n");
 		  		console.log(logrows);
 				response.render('admin', { HospitalName: rows0[0]["HospitalName"], patients: rows1, LogData: logrows });
@@ -75,125 +75,202 @@ router.post('/:HospitalID', function (req, res, next) {
 		if (err) throw err
 	});
 
-    // Check if admitting or treating (or deleting)
-	if (parseInt(req.body.PatientStatus) <= 6){
-		var incrementValue = 1
-	}
-	else {
-		var incrementValue = -1
-	}
 
-	// Check what MySQL token is needed based on Patient urgency category
-	var token;
-	switch (parseInt(req.body.PatientStatus) % 6 ) {
-	    case 1:
-	        token = "OmegaPatients = OmegaPatients + ";
-	        break;
-	    case 2:
-	        token = "AlphaPatients = AlphaPatients + ";
-	        break;
-	    case 3:
-	        token = "BravoPatients = BravoPatients + ";
-	        break;
-	    case 4:
-	        token = "CharliePatients = CharliePatients + ";
-	        break;
-	    case 5:
-	        token = "DeltaPatients = DeltaPatients + ";
-	        break;
-	    case 0:
-	        token = "EchoPatients = EchoPatients + ";
-	        break;
-	}
-
-    // Update the WaitingRooms table by incrementing the relevant tier's queue
-    console.log("UPDATE WaitingRooms SET " 
-						 + token
-						 + incrementValue 
-						 + " WHERE HospitalID = "
-						 + req.params.HospitalID
-						 + ";");
-    connection.query("UPDATE WaitingRooms SET " 
-						 + token
-						 + incrementValue 
-						 + " WHERE HospitalID = "
-						 + req.params.HospitalID
-						 + ";");
-
-	// Update Log
-	// if (true){
-	// 	connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err, rows0, fields0){
-	// 		connection.query('INSERT INTO ActivityLog SET PatientID='
- //                       + rows0[0].PatientID
- //                       + ", PreviousState='N', NewState='A', LogTime='"
- //                       + getFormattedDate()
- //                       + "', UndoAction=False, HospitalID=",
- //                       + req.params.HospitalID
- //                       + ';',
-	// 					function (err, rows1, fields1){
-	// 						console.log("Updated Log: Patient Added to Queue");
-	// 					})
-	// 	})
-	// }
-	// else if (parseInt(req.body.PatientStatus) <= 12){
-	// 	var ID = req.body.PatientID;
-	// 	connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
- //                       + ID
- //                       + ', "A", "R", "'
- //                       + getFormattedDate()
- //                       + '", False, ',
- //                       + req.params.HospitalID
- //                       + ');',
-	// 					function (err, rows, fields){
-	// 						console.log("Updated Log: Removed Patient from Queue");
-	// 					})
-	// }
-	// else if (parseInt(req.body.PatientStatus) <= 18){
-	// 	var ID = req.body.PatientID;
-	// 	connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
- //                       + ID
- //                       + ', "A", "D", "'
- //                       + getFormattedDate()
- //                       + '", False, ',
- //                       + req.params.HospitalID
- //                       + ');',
-	// 					function (err, rows, fields){
-	// 						console.log("Updated Log: Deleted Patient From System");
-	// 					})
-	// }
-
-	// Add new patient to queue
-	if (parseInt(req.body.PatientStatus) <= 6){
-		connection.query('INSERT INTO Patients (PatientStatus, HospitalID, WaitTimeStart) VALUES (' + req.body.PatientStatus + ", " + req.params.HospitalID + ", '" + getFormattedDate() + "');", function (err, rows, fields) {
+	// UNDO
+	if (parseInt(req.body.PatientStatus) == 18){
+		console.log("Undo detected!");
+		console.log('SELECT * FROM ActivityLog WHERE LogID = ' + req.body.LogID + ';');
+		// Look up LogID in ActivityLog
+		connection.query('SELECT * FROM ActivityLog WHERE LogID = ' + req.body.LogID + ';', function (err, rows, fields){
 			if (err) throw err
-			connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err0, rows0, fields0){
-				if (err0) throw err0
-				connection.query('INSERT INTO ActivityLog SET PatientID = '+ rows0[0].PatientID + ', PreviousState = "N", NewState = "A", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-				  	if (err1) throw err1
-			  		response.redirect('/' + req.params.HospitalID);
-				})								
+			console.log("Looked up ActivityLog");
+			connection.query('SELECT * FROM Patients WHERE PatientID = ' + rows[0].PatientID + ';', function (err0, rows0, fields0){
+				console.log("Looked up Patients");
+
+				// Undoing the action of adding a patient to the queue who previously did not exist in the system
+				if(rows[0].NewState == "A"){
+					connection.query("UPDATE Patients SET Deleted=True WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						console.log("Updated Patient table")
+						var token;
+						if(rows0[0].PatientStatus == 1){
+							token = "Omega";
+						}
+						else if(rows0[0].PatientStatus == 2){
+							token = "Alpha";
+						}
+						else if(rows0[0].PatientStatus == 3){
+							token = "Bravo";
+						}					
+						else if(rows0[0].PatientStatus == 4){
+							token = "Charlie";
+						}
+						else if(rows0[0].PatientStatus == 5){
+							token = "Delta";
+						}
+						else if(rows0[0].PatientStatus == 6){
+							token = "Echo";
+						}
+
+						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients - 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							console.log("Updated WaitingRooms table")
+							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								console.log("Updated ActivityLog table");
+								response.redirect('/' + req.params.HospitalID);
+							});																	
+						});				
+					});		
+				}
+
+				// Undoing the action of removing a patient from the queue i.e. putting the patient back in the queue as they were before they were removed
+				if(rows[0].NewState == "R"){
+					connection.query("UPDATE Patients SET WaitTimeEnd=NULL WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						console.log("Updated Patient table")
+						var token;
+						if(rows0[0].PatientStatus == 1){
+							token = "Omega";
+						}
+						else if(rows0[0].PatientStatus == 2){
+							token = "Alpha";
+						}
+						else if(rows0[0].PatientStatus == 3){
+							token = "Bravo";
+						}					
+						else if(rows0[0].PatientStatus == 4){
+							token = "Charlie";
+						}
+						else if(rows0[0].PatientStatus == 5){
+							token = "Delta";
+						}
+						else if(rows0[0].PatientStatus == 6){
+							token = "Echo";
+						}
+
+						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							console.log("Updated WaitingRooms table")
+							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								console.log("Updated ActivityLog table");
+								response.redirect('/' + req.params.HospitalID);
+							});																	
+						});				
+					});		
+				}
+
+				// Undoing the action of Deleting a patient from the system when they were in the queue
+				if(rows[0].NewState == "D"){
+					connection.query("UPDATE Patients SET Deleted=False WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						console.log("Updated Patient table")
+						var token;
+						if(rows0[0].PatientStatus == 1){
+							token = "Omega";
+						}
+						else if(rows0[0].PatientStatus == 2){
+							token = "Alpha";
+						}
+						else if(rows0[0].PatientStatus == 3){
+							token = "Bravo";
+						}					
+						else if(rows0[0].PatientStatus == 4){
+							token = "Charlie";
+						}
+						else if(rows0[0].PatientStatus == 5){
+							token = "Delta";
+						}
+						else if(rows0[0].PatientStatus == 6){
+							token = "Echo";
+						}
+
+						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							console.log("Updated WaitingRooms table")
+							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								console.log("Updated ActivityLog table");
+								response.redirect('/' + req.params.HospitalID);
+							});																	
+						});				
+					});		
+				}
+			});
+		});
+	}
+	else{
+		// NOT UNDO
+	    // Check if admitting or treating (or deleting)
+		if (parseInt(req.body.PatientStatus) <= 6){
+			var incrementValue = 1
+		}
+		else {
+			var incrementValue = -1
+		}
+
+		// Check what MySQL token is needed based on Patient urgency category (except for undoing)
+		var token;
+		switch (parseInt(req.body.PatientStatus) % 6 ) {
+		    case 1:
+		        token = "OmegaPatients = OmegaPatients + ";
+		        break;
+		    case 2:
+		        token = "AlphaPatients = AlphaPatients + ";
+		        break;
+		    case 3:
+		        token = "BravoPatients = BravoPatients + ";
+		        break;
+		    case 4:
+		        token = "CharliePatients = CharliePatients + ";
+		        break;
+		    case 5:
+		        token = "DeltaPatients = DeltaPatients + ";
+		        break;
+		    case 0:
+		        token = "EchoPatients = EchoPatients + ";
+		        break;
+		}
+
+	    // Update the WaitingRooms table by incrementing the relevant tier's queue
+	    console.log("UPDATE WaitingRooms SET " 
+							 + token
+							 + incrementValue 
+							 + " WHERE HospitalID = "
+							 + req.params.HospitalID
+							 + ";");
+	    connection.query("UPDATE WaitingRooms SET " 
+							 + token
+							 + incrementValue 
+							 + " WHERE HospitalID = "
+							 + req.params.HospitalID
+							 + ";");
+
+		// Add new patient to queue
+		if (parseInt(req.body.PatientStatus) <= 6){
+			connection.query('INSERT INTO Patients (PatientStatus, HospitalID, WaitTimeStart) VALUES (' + req.body.PatientStatus + ", " + req.params.HospitalID + ", '" + getFormattedDate() + "');", function (err, rows, fields) {
+				if (err) throw err
+				connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err0, rows0, fields0){
+					if (err0) throw err0
+					connection.query('INSERT INTO ActivityLog SET PatientID = '+ rows0[0].PatientID + ', PreviousState = "N", NewState = "A", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+					  	if (err1) throw err1
+				  		response.redirect('/' + req.params.HospitalID);
+					})								
+				})
+			})	
+		}
+
+		// Remove patient from queue
+		else if (parseInt(req.body.PatientStatus) <= 12){
+			connection.query('UPDATE Patients SET WaitTimeEnd = "' + getFormattedDate() + '" WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
+			  	if (err) throw err
+			  	connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "R", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+		  			response.redirect('/' + req.params.HospitalID);
+		  		})
 			})
-		})	
-	}
+		}
 
-	// Remove patient from queue
-	else if (parseInt(req.body.PatientStatus) <= 12){
-		connection.query('UPDATE Patients SET WaitTimeEnd = "' + getFormattedDate() + '" WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
-		  	if (err) throw err
-		  	connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "R", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-	  			response.redirect('/' + req.params.HospitalID);
-	  		})
-		})
-	}
-
-	// Delete patient from system
-	else {
-		connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
-		  	if (err) throw err
-	  		connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "D", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-	  			response.redirect('/' + req.params.HospitalID);
-	  		})
-		})
+		// Delete patient from system
+		else {
+			connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
+			  	if (err) throw err
+		  		connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "D", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+		  			response.redirect('/' + req.params.HospitalID);
+		  		})
+			})
+		}
 	}
 });
 
