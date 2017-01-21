@@ -18,7 +18,10 @@ var connection = mysql.createConnection({
 })
 
 connection.query('USE heroku_5aad6cee4f2d147;', function (err, rows, fields) {
-  	if (err) throw err
+  	if (err){
+  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+  		else throw err
+  	}
   	console.log('Using heroku_5aad6cee4f2d147 DB.')
 })
 
@@ -29,7 +32,10 @@ router.get('/', function (req, res, next) {
 	console.dir(req.query.valid)
 	if(req.query.valid == "false") console.log("invalid!")
 	connection.query('SELECT * FROM WaitingRooms;', function (err, rows, fields) {
-	  	if (err) throw err
+	  	if (err){
+	  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+	  		else throw err
+	  	}
 	  	calculateTimes(rows);
 	  	console.log("GET home page:\n\n")
 	  	console.log(rows)
@@ -44,19 +50,28 @@ router.get('/:HospitalID', function (req, res, next) {
 
 	// Check if valid hospital ID
 	connection.query('SELECT * FROM WaitingRooms WHERE HospitalID = "' + req.params.HospitalID + '";', function (err0, rows0, fields0){
-		if (err0) throw err0
+	  	if (err0){
+	  		if(err0.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+	  		else throw err0
+	  	}
 		if (rows0[0] == undefined){
 			// If we get back undefined rows, then the hospital ID was invalid
   			response.redirect('/?valid=false');
   			return;
 		}
 		connection.query('SELECT PatientID AS PatientID, PatientStatus AS PatientStatus, HospitalID AS HospitalID, COALESCE(DATE_FORMAT(WaitTimeStart, "%H:%i"), "-1") AS WaitTimeStart, COALESCE(DATE_FORMAT(WaitTimeEnd, "%H:%i"), "Click to discharge") AS WaitTimeEnd FROM Patients WHERE HospitalID = "' + req.params.HospitalID + '" AND WaitTimeEnd IS NULL AND Deleted = False ORDER BY PatientID DESC;', function (err1, rows1, fields1){
-			if (err1) throw err1
+		  	if (err1){
+		  		if(err1.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+		  		else throw err1
+		  	}
 			console.log("GET hospital admin page:\n\n")
 			console.log(rows0)
 		  	console.log(rows1)
 		  	connection.query('SELECT LogID AS LogID, PatientID AS PatientID, PreviousState AS PreviousState, NewState AS NewState, COALESCE(DATE_FORMAT(LogTime, "%H:%i"), "-1") AS LogTime, UndoAction AS UndoAction, HospitalID AS HospitalID FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' AND UndoAction = False ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
-		  		if (logerr) throw logerr
+			  	if (logerr){
+			  		if(logerr.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+			  		else throw logerr
+			  	}
 		  		console.log("\n\nSENT LOG DATA:\n\n");
 		  		console.log(logrows);
 				response.render('admin', { HospitalName: rows0[0]["HospitalName"], patients: rows1, LogData: logrows });
@@ -75,7 +90,10 @@ router.post('/:HospitalID', function (req, res, next) {
 	// Check if valid hospital ID
 	// Fix this
 	connection.query('SELECT * FROM WaitingRooms WHERE HospitalID = "' + req.params.HospitalID + '";', function (err, rows, fields){
-		if (err) throw err
+	  	if (err){
+	  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+	  		else throw err
+	  	}
 	});
 
 
@@ -85,16 +103,25 @@ router.post('/:HospitalID', function (req, res, next) {
 		console.log('SELECT * FROM ActivityLog WHERE LogID = ' + req.body.LogID + ';');
 		// Look up LogID in ActivityLog
 		connection.query('SELECT * FROM ActivityLog WHERE LogID = ' + req.body.LogID + ';', function (err, rows, fields){
-			if (err) throw err
+		  	if (err){
+		  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+		  		else throw err
+		  	}
 			console.log("Looked up ActivityLog");
 			connection.query('SELECT * FROM Patients WHERE PatientID = ' + rows[0].PatientID + ';', function (err0, rows0, fields0){
-				if (err0) throw err0
+			  	if (err0){
+			  		if(err0.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+			  		else throw err0
+			  	}
 				console.log("Looked up Patients");
 
 				// Undoing the action of adding a patient to the queue who previously did not exist in the system
 				if(rows[0].NewState == "A"){
 					connection.query("UPDATE Patients SET Deleted=True WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
-						if (err) throw err
+				  	if (err){
+				  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+				  		else throw err
+				  	}
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -117,10 +144,16 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients - 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
-							if (err) throw err
+						  	if (err){
+						  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+						  		else throw err
+						  	}
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
-								if (err) throw err
+							  	if (err){
+							  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+							  		else throw err
+							  	}
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -131,7 +164,10 @@ router.post('/:HospitalID', function (req, res, next) {
 				// Undoing the action of removing a patient from the queue i.e. putting the patient back in the queue as they were before they were removed
 				if(rows[0].NewState == "R"){
 					connection.query("UPDATE Patients SET WaitTimeEnd=NULL WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
-						if (err) throw err
+					  	if (err){
+					  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+					  		else throw err
+					  	}
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -154,10 +190,16 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
-							if (err) throw err
+						  	if (err){
+						  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+						  		else throw err
+						  	}
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
-								if (err) throw err
+							  	if (err){
+							  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+							  		else throw err
+							  	}
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -168,7 +210,10 @@ router.post('/:HospitalID', function (req, res, next) {
 				// Undoing the action of Deleting a patient from the system when they were in the queue
 				if(rows[0].NewState == "D"){
 					connection.query("UPDATE Patients SET Deleted=False WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
-						if (err) throw err
+					  	if (err){
+					  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+					  		else throw err
+					  	}
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -191,10 +236,16 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
-							if (err) throw err
+						  	if (err){
+						  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+						  		else throw err
+						  	}
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
-								if (err) throw err
+							  	if (err){
+							  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+							  		else throw err
+							  	}
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -249,16 +300,30 @@ router.post('/:HospitalID', function (req, res, next) {
 							 + incrementValue 
 							 + " WHERE HospitalID = "
 							 + req.params.HospitalID
-							 + ";");
+							 + ";", function (err, rows, fields){
+		  	if (err){
+		  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+		  		else throw err
+		  	}							 	
+		});
 
 		// Add new patient to queue
 		if (parseInt(req.body.PatientStatus) <= 6){
 			connection.query('INSERT INTO Patients (PatientStatus, HospitalID, WaitTimeStart) VALUES (' + req.body.PatientStatus + ", " + req.params.HospitalID + ", '" + getFormattedDate() + "');", function (err, rows, fields) {
-				if (err) throw err
+			  	if (err){
+			  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+			  		else throw err
+			  	}
 				connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err0, rows0, fields0){
-					if (err0) throw err0
+				  	if (err0){
+				  		if(err0.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+				  		else throw err0
+				  	}
 					connection.query('INSERT INTO ActivityLog SET PatientID = '+ rows0[0].PatientID + ', PreviousState = "N", NewState = "A", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-					  	if (err1) throw err1
+					  	if (err1){
+					  		if(err1.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+					  		else throw err1
+					  	}
 				  		response.redirect('/' + req.params.HospitalID);
 					})								
 				})
@@ -268,9 +333,15 @@ router.post('/:HospitalID', function (req, res, next) {
 		// Remove patient from queue
 		else if (parseInt(req.body.PatientStatus) <= 12){
 			connection.query('UPDATE Patients SET WaitTimeEnd = "' + getFormattedDate() + '" WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
-			  	if (err) throw err
+			  	if (err){
+			  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+			  		else throw err
+			  	}
 			  	connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "R", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-		  			if (err1) throw err1
+				  	if (err1){
+				  		if(err1.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+				  		else throw err1
+				  	}
 		  			response.redirect('/' + req.params.HospitalID);
 		  		})
 			})
@@ -279,9 +350,15 @@ router.post('/:HospitalID', function (req, res, next) {
 		// Delete patient from system
 		else {
 			connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
-			  	if (err) throw err
+			  	if (err){
+			  		if(err.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+			  		else throw err
+			  	}
 		  		connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "D", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
-		  			if (err1) throw err1
+				  	if (err1){
+				  		if(err1.code = 'PROTOCOL_CONNECTION_LOST') connection = mysql.createConnection({ host: 'us-cdbr-iron-east-04.cleardb.net', user: 'b2718b3ac5712e', password: '4a8fad2c', database: 'heroku_5aad6cee4f2d147'})
+				  		else throw err1
+				  	}
 		  			response.redirect('/' + req.params.HospitalID);
 		  		})
 			})
