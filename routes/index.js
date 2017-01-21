@@ -11,9 +11,9 @@ var NORMALIZER = 10
 // Connect to DB
 var mysql = require('mysql')
 var connection = mysql.createConnection({
-  	host: 'localhost',
-  	user: 'root',
-  	password: 'chocolate'
+  	host: 'us-cdbr-iron-east-04.cleardb.net',
+  	user: 'b2718b3ac5712e',
+  	password: '4a8fad2c'
 })
 
 connection.query('USE Flow;', function (err, rows, fields) {
