@@ -17,9 +17,9 @@ var connection = mysql.createConnection({
   	database: 'heroku_5aad6cee4f2d147'
 })
 
-connection.query('USE Flowii;', function (err, rows, fields) {
+connection.query('USE heroku_5aad6cee4f2d147;', function (err, rows, fields) {
   	if (err) throw err
-  	console.log('Using Flow DB.')
+  	console.log('Using heroku_5aad6cee4f2d147 DB.')
 })
 
 
