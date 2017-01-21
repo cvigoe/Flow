@@ -23,11 +23,11 @@ block content
             tbody(id="bootstrap-override")
               for logentry in LogData
                 - var phrase;
-                - if(logentry.PreviousState == 'N' && logentry.NewState == 'A') phrase = " added to queue"
-                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'R') phrase = " removed from queue"
-                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'D') phrase = " deleted from system"
+                - if(logentry.PreviousState == 'N' && logentry.NewState == 'A') phrase = " added to queue at "
+                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'R') phrase = " removed from queue at "
+                - else if(logentry.PreviousState == 'A' && logentry.NewState == 'D') phrase = " deleted from system at "
                 tr
-                  td(colspan=2)="Patient " + logentry.PatientID + phrase
+                  td(colspan=2)="Patient " + logentry.PatientID + phrase + logentry.LogTime
                   td(colspan=1)= "Undo"
             thead
               tr

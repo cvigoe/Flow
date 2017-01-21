@@ -54,7 +54,7 @@ router.get('/:HospitalID', function (req, res, next) {
 			console.log("GET hospital admin page:\n\n")
 			console.log(rows0)
 		  	console.log(rows1)
-		  	connection.query('SELECT * FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
+		  	connection.query('SELECT PatientID AS PatientID, PreviousState AS PreviousState, NewState AS NewState, COALESCE(DATE_FORMAT(LogTime, "%H:%i"), "-1") AS LogTime, UndoAction AS UndoAction, HospitalID AS HospitalID FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
 		  		console.log("\n\nSENT LOG DATA:\n\n");
 		  		console.log(logrows);
 				response.render('admin', { HospitalName: rows0[0]["HospitalName"], patients: rows1, LogData: logrows });
@@ -120,101 +120,80 @@ router.post('/:HospitalID', function (req, res, next) {
 						 + req.params.HospitalID
 						 + ";");
 
+	// Update Log
+	// if (true){
+	// 	connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err, rows0, fields0){
+	// 		connection.query('INSERT INTO ActivityLog SET PatientID='
+ //                       + rows0[0].PatientID
+ //                       + ", PreviousState='N', NewState='A', LogTime='"
+ //                       + getFormattedDate()
+ //                       + "', UndoAction=False, HospitalID=",
+ //                       + req.params.HospitalID
+ //                       + ';',
+	// 					function (err, rows1, fields1){
+	// 						console.log("Updated Log: Patient Added to Queue");
+	// 					})
+	// 	})
+	// }
+	// else if (parseInt(req.body.PatientStatus) <= 12){
+	// 	var ID = req.body.PatientID;
+	// 	connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
+ //                       + ID
+ //                       + ', "A", "R", "'
+ //                       + getFormattedDate()
+ //                       + '", False, ',
+ //                       + req.params.HospitalID
+ //                       + ');',
+	// 					function (err, rows, fields){
+	// 						console.log("Updated Log: Removed Patient from Queue");
+	// 					})
+	// }
+	// else if (parseInt(req.body.PatientStatus) <= 18){
+	// 	var ID = req.body.PatientID;
+	// 	connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
+ //                       + ID
+ //                       + ', "A", "D", "'
+ //                       + getFormattedDate()
+ //                       + '", False, ',
+ //                       + req.params.HospitalID
+ //                       + ');',
+	// 					function (err, rows, fields){
+	// 						console.log("Updated Log: Deleted Patient From System");
+	// 					})
+	// }
+
 	// Add new patient to queue
 	if (parseInt(req.body.PatientStatus) <= 6){
-		connection.query('INSERT INTO Patients (PatientStatus, HospitalID, WaitTimeStart) VALUES ('
-							 + req.body.PatientStatus
-							 + ", " 
-							 + req.params.HospitalID
-							 + ", '"
-							 + getFormattedDate()
-							 + "');", 
-							 function (err, rows, fields) {
-		  	if (err) throw err
-		  	console.log("PUT hospital admin page (admitting):\n\n")
-	  		console.log(req.params.HospitalID)
-	  		response.redirect('/' + req.params.HospitalID);
-		})
+		connection.query('INSERT INTO Patients (PatientStatus, HospitalID, WaitTimeStart) VALUES (' + req.body.PatientStatus + ", " + req.params.HospitalID + ", '" + getFormattedDate() + "');", function (err, rows, fields) {
+			if (err) throw err
+			connection.query('SELECT * FROM Patients ORDER BY PatientID DESC;', function (err0, rows0, fields0){
+				if (err0) throw err0
+				connection.query('INSERT INTO ActivityLog SET PatientID = '+ rows0[0].PatientID + ', PreviousState = "N", NewState = "A", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+				  	if (err1) throw err1
+			  		response.redirect('/' + req.params.HospitalID);
+				})								
+			})
+		})	
 	}
 
 	// Remove patient from queue
 	else if (parseInt(req.body.PatientStatus) <= 12){
-		console.log("Trying to remove!");
-		connection.query('UPDATE Patients SET WaitTimeEnd = "'
-										 + getFormattedDate()
-										 + '" WHERE PatientID = '
-										 + req.body.PatientID
-										 + ";", 
-										 function (err, rows, fields) {
+		connection.query('UPDATE Patients SET WaitTimeEnd = "' + getFormattedDate() + '" WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
 		  	if (err) throw err
-		  	console.log("POST hospital admin page (treating):\n\n")
-	  		console.log(req.params.HospitalID)	
-	  		response.redirect('/' + req.params.HospitalID);
+		  	connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "R", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+	  			response.redirect('/' + req.params.HospitalID);
+	  		})
 		})
 	}
 
 	// Delete patient from system
 	else {
-		connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = '
-										 + req.body.PatientID
-										 + ";", 
-										 function (err, rows, fields) {
+		connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
 		  	if (err) throw err
-		  	console.log("POST hospital admin page (deleting):\n\n")
-	  		console.log(req.params.HospitalID)	
-	  		response.redirect('/' + req.params.HospitalID);
-		  	// response.render('admin', { hospitalID: req.params.HospitalID });
+	  		connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "D", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+	  			response.redirect('/' + req.params.HospitalID);
+	  		})
 		})
-	}
-
-	// Update Log
-	if (parseInt(req.body.PatientStatus) <= 6){
-		connection.query('SELECT * FROM Patients ORDER BY PatientID DESC LIMIT 1;', function (err, rows0, fields0){
-			var ID = rows0[0].PatientID;
-
-			console.log('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction, HospitalID) VALUES ('
-                       + ID
-                       + ', "N", "A", "'
-                       + getFormattedDate()
-                       + '", False, ',
-                       + req.params.HospitalID
-                       + ');')
-
-			connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction, HospitalID) VALUES ('
-                       + ID
-                       + ', "N", "A", "'
-                       + getFormattedDate()
-                       + '", False);',
-						function (err, rows1, fields1){
-							console.log("Updated Log: Patient Added to Queue");
-						})
-		})
-	}
-	else if (parseInt(req.body.PatientStatus) <= 12){
-		var ID = req.body.PatientID;
-		connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
-                       + ID
-                       + ', "A", "R", "'
-                       + getFormattedDate()
-                       + '", False, ',
-                       + req.params.HospitalID
-                       + ');',
-						function (err, rows, fields){
-							console.log("Updated Log: Removed Patient from Queue");
-						})
-	}
-	else if (parseInt(req.body.PatientStatus) <= 18){
-		var ID = req.body.PatientID;
-		connection.query('INSERT INTO ActivityLog (PatientID, PreviousState, NewState, LogTime, UndoAction) VALUES ('
-                       + ID
-                       + ', "A", "D", "'
-                       + getFormattedDate()
-                       + '", False, ',
-                       + req.params.HospitalID
-                       + ');',
-						function (err, rows, fields){
-							console.log("Updated Log: Deleted Patient From System");
-						})
 	}
 });
 
