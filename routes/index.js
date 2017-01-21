@@ -56,6 +56,7 @@ router.get('/:HospitalID', function (req, res, next) {
 			console.log(rows0)
 		  	console.log(rows1)
 		  	connection.query('SELECT LogID AS LogID, PatientID AS PatientID, PreviousState AS PreviousState, NewState AS NewState, COALESCE(DATE_FORMAT(LogTime, "%H:%i"), "-1") AS LogTime, UndoAction AS UndoAction, HospitalID AS HospitalID FROM ActivityLog WHERE HospitalID = ' + req.params.HospitalID + ' AND UndoAction = False ORDER BY LogID DESC LIMIT 3;', function (logerr, logrows, logfields){
+		  		if (logerr) throw logerr
 		  		console.log("\n\nSENT LOG DATA:\n\n");
 		  		console.log(logrows);
 				response.render('admin', { HospitalName: rows0[0]["HospitalName"], patients: rows1, LogData: logrows });
@@ -72,6 +73,7 @@ router.post('/:HospitalID', function (req, res, next) {
 	var response = res;
 
 	// Check if valid hospital ID
+	// Fix this
 	connection.query('SELECT * FROM WaitingRooms WHERE HospitalID = "' + req.params.HospitalID + '";', function (err, rows, fields){
 		if (err) throw err
 	});
@@ -86,11 +88,13 @@ router.post('/:HospitalID', function (req, res, next) {
 			if (err) throw err
 			console.log("Looked up ActivityLog");
 			connection.query('SELECT * FROM Patients WHERE PatientID = ' + rows[0].PatientID + ';', function (err0, rows0, fields0){
+				if (err0) throw err0
 				console.log("Looked up Patients");
 
 				// Undoing the action of adding a patient to the queue who previously did not exist in the system
 				if(rows[0].NewState == "A"){
 					connection.query("UPDATE Patients SET Deleted=True WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						if (err) throw err
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -113,8 +117,10 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients - 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							if (err) throw err
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								if (err) throw err
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -125,6 +131,7 @@ router.post('/:HospitalID', function (req, res, next) {
 				// Undoing the action of removing a patient from the queue i.e. putting the patient back in the queue as they were before they were removed
 				if(rows[0].NewState == "R"){
 					connection.query("UPDATE Patients SET WaitTimeEnd=NULL WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						if (err) throw err
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -147,8 +154,10 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							if (err) throw err
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								if (err) throw err
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -159,6 +168,7 @@ router.post('/:HospitalID', function (req, res, next) {
 				// Undoing the action of Deleting a patient from the system when they were in the queue
 				if(rows[0].NewState == "D"){
 					connection.query("UPDATE Patients SET Deleted=False WHERE PatientID=" + rows[0].PatientID + ";", function (err, rows, fields){
+						if (err) throw err
 						console.log("Updated Patient table")
 						var token;
 						if(rows0[0].PatientStatus == 1){
@@ -181,8 +191,10 @@ router.post('/:HospitalID', function (req, res, next) {
 						}
 
 						connection.query("UPDATE WaitingRooms SET " + token + "Patients = " + token + "Patients + 1 WHERE HospitalID = " + req.params.HospitalID + ";", function (err, rows, fields){
+							if (err) throw err
 							console.log("Updated WaitingRooms table")
 							connection.query("UPDATE ActivityLog SET UndoAction = True WHERE LogID = " + req.body.LogID + ";", function (err, rows, fields){
+								if (err) throw err
 								console.log("Updated ActivityLog table");
 								response.redirect('/' + req.params.HospitalID);
 							});																	
@@ -258,6 +270,7 @@ router.post('/:HospitalID', function (req, res, next) {
 			connection.query('UPDATE Patients SET WaitTimeEnd = "' + getFormattedDate() + '" WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
 			  	if (err) throw err
 			  	connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "R", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+		  			if (err1) throw err1
 		  			response.redirect('/' + req.params.HospitalID);
 		  		})
 			})
@@ -268,6 +281,7 @@ router.post('/:HospitalID', function (req, res, next) {
 			connection.query('UPDATE Patients SET Deleted = True WHERE PatientID = ' + req.body.PatientID + ";", function (err, rows, fields) {
 			  	if (err) throw err
 		  		connection.query('INSERT INTO ActivityLog SET PatientID = '+ req.body.PatientID + ', PreviousState = "A", NewState = "D", LogTime = "' + getFormattedDate() + '", UndoAction = False, HospitalID = ' + req.params.HospitalID +';', function (err1, rows1, fields1){
+		  			if (err1) throw err1
 		  			response.redirect('/' + req.params.HospitalID);
 		  		})
 			})
