@@ -13,7 +13,8 @@ var mysql = require('mysql')
 var connection = mysql.createConnection({
   	host: 'us-cdbr-iron-east-04.cleardb.net',
   	user: 'b2718b3ac5712e',
-  	password: '4a8fad2c'
+  	password: '4a8fad2c',
+  	database: 'heroku_5aad6cee4f2d147'
 })
 
 connection.query('USE Flow;', function (err, rows, fields) {
