@@ -1,6 +1,8 @@
 extends layout
 block content
   .container
+    .card
+      .card-block This page displays real-time occupancy data for each of the 11 Accident & Emergency Waiting Rooms in the Leinster region. The estimated wait time for an incoming patient of a particular triage category is indicated in minutes.
     .row
       for hospital in data
         div(class="col-md-4")
@@ -11,7 +13,7 @@ block content
             table(class="table table-hover", style="text-align: center;")
               thead
                 tr
-                  th(style="text-align: center; vertical-align: middle;") Urgency Category
+                  th(style="text-align: center; vertical-align: middle;") Triage Category
                   th(style="text-align: center; vertical-align: middle;") Incoming Patient Wait Time
                   th(style="text-align: center; vertical-align: middle;") Patients in Waiting Room
               tbody(id="bootstrap-override") 

@@ -2,6 +2,9 @@ extends layout
 block content
   .container
     .row
+      .container
+      .card
+        .card-block= "This page displays the current Accident & Emergency waiting room queue. To add an incoming patient to the queue, select one of the relevant triage category + buttons. To remove a patient from the Waiting Room queue for treatment, select the - button for the relevant patient. To delete a patient from the system, select the cross button beside the relevant patient. To undo any action, select the undo button."
       .col-md-2
       .col-md-8
         table(class="table table-hover", style="text-align: center;")
