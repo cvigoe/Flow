@@ -204,8 +204,9 @@ router.post('/:HospitalID', function (req, res, next) {
 			});
 		});
 	}
+
+	// NOT UNDO
 	else{
-		// NOT UNDO
 	    // Check if admitting or treating (or deleting)
 		if (parseInt(req.body.PatientStatus) <= 6){
 			var incrementValue = 1
@@ -290,10 +291,8 @@ function calculateTimes(rows){
 	  	rows[i]["BravoTime"] = rows[i]["BravoPatients"]*rows[i]["BravoRate"] + rows[i]["CharlieTime"]
 	  	rows[i]["AlphaTime"] = rows[i]["AlphaPatients"]*rows[i]["AlphaRate"] + rows[i]["BravoTime"]
 	  	rows[i]["OmegaTime"] = rows[i]["OmegaPatients"]*rows[i]["OmegaRate"] + rows[i]["AlphaTime"]
-	  	rows[i]["SAWTime"] = (rows[i]["OmegaTime"]*OMEGARATE + rows[i]["AlphaTime"]*ALPHARATE + rows[i]["BravoTime"]*BRAVORATE
-	  						  + rows[i]["CharlieTime"]*CHARLIERATE + rows[i]["DeltaTime"]*DELTARATE + rows[i]["EchoTime"]*ECHORATE) / NORMALIZER
-	  	rows[i]["TotalPatients"] = rows[i]["OmegaPatients"] + rows[i]["AlphaPatients"] + rows[i]["BravoPatients"]
-	  							   + rows[i]["CharliePatients"] + rows[i]["DeltaPatients"] + rows[i]["EchoPatients"]
+	  	rows[i]["SAWTime"] = (rows[i]["OmegaTime"]*OMEGARATE + rows[i]["AlphaTime"]*ALPHARATE + rows[i]["BravoTime"]*BRAVORATE + rows[i]["CharlieTime"]*CHARLIERATE + rows[i]["DeltaTime"]*DELTARATE + rows[i]["EchoTime"]*ECHORATE) / NORMALIZER
+	  	rows[i]["TotalPatients"] = rows[i]["OmegaPatients"] + rows[i]["AlphaPatients"] + rows[i]["BravoPatients"] + rows[i]["CharliePatients"] + rows[i]["DeltaPatients"] + rows[i]["EchoPatients"]
 	}
 }
 
