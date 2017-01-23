@@ -3,15 +3,24 @@ block content
   .container
     .row
       .container
-        .card
-          .card-block= "This page displays the current Accident & Emergency waiting room queue. To add an incoming patient to the queue, select one of the relevant triage category + buttons. To remove a patient from the Waiting Room queue for treatment, select the - button for the relevant patient. To delete a patient from the system, select the cross button beside the relevant patient. To undo any action, select the undo button."
+        .card(id="message")
+          button(class="btn btn-outline-secondary hide", id="hide")
+            img(src="/images/clear.svg")
+          .card-block 
+            p
+              span(id="1st-line")="This page displays the current Accident & Emergency Waiting Room queue." 
+            ul
+              li="To add an incoming patient to the queue, select one of the relevant triage category + buttons."
+              li="To remove a patient from the Waiting Room queue for treatment, select the - button for the relevant patient." 
+              li="To delete a patient from the system, select the cross button beside the relevant patient." 
+              li="To undo any action, select the undo button."
         .col-md-2
         .col-md-8
           table(class="table table-hover", style="text-align: center;")
             div(class="panel panel-default", id="bootstrap-override")
               a(href="/", id="bootstrap-override")
                 div(class="panel-heading", style="text-align: center;")
-                  h4=HospitalName + " Emergency Room Queue"
+                  h4=HospitalName + " Accident & Emergency Waiting Room Queue"
               form(action="", method="post")    
                 div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
                   button(type="submit", name="PatientStatus", value="1", class="btn btn-outline-primary") +OMEGA

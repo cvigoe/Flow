@@ -11,6 +11,10 @@ var NORMALIZER = 10
 // Connect to DB
 var mysql = require('mysql')
 var connection = mysql.createPool({
+    connectionLimit : 1000,
+    connectTimeout  : 60 * 60 * 1000,
+    aquireTimeout   : 60 * 60 * 1000,
+    timeout         : 60 * 60 * 1000,    
     canRetry: true,
     port: 3306,
     connectionLimit: 9,
@@ -21,6 +25,8 @@ var connection = mysql.createPool({
   	password: '4a8fad2c',
   	database: 'heroku_5aad6cee4f2d147'    
 });
+
+console.log("Connected!");
 
 connection.query('USE heroku_5aad6cee4f2d147;', function (err, rows, fields) {
   	if(err) throw err

@@ -36,9 +36,15 @@ position: absolute;
     left: 5%;
 }
 
-.delete img{
+img{
   height: 28px;
   opacity: 0.2;
+}
+
+.hide img {
+  position: relative;
+  left: -13px;
+  top: -5px;
 }
 
 #delete-override button{
@@ -60,4 +66,27 @@ position: absolute;
     float: right;
     position: relative;
     top: 18px;  
+}
+
+.table > thead > tr > th {
+     vertical-align: middle;
+}
+
+.hide {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    width: 35px;
+    height: 35px; 
+}
+
+#message p{
+  width: 95%;
+}
+
+#help-link {
+    text-decoration: none;
+    position: relative;
+    top: 11px;
+    left: 2%;  
 }
