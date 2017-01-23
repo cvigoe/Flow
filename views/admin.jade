@@ -3,67 +3,67 @@ block content
   .container
     .row
       .container
-      .card
-        .card-block= "This page displays the current Accident & Emergency waiting room queue. To add an incoming patient to the queue, select one of the relevant triage category + buttons. To remove a patient from the Waiting Room queue for treatment, select the - button for the relevant patient. To delete a patient from the system, select the cross button beside the relevant patient. To undo any action, select the undo button."
+        .card
+          .card-block= "This page displays the current Accident & Emergency waiting room queue. To add an incoming patient to the queue, select one of the relevant triage category + buttons. To remove a patient from the Waiting Room queue for treatment, select the - button for the relevant patient. To delete a patient from the system, select the cross button beside the relevant patient. To undo any action, select the undo button."
+        .col-md-2
+        .col-md-8
+          table(class="table table-hover", style="text-align: center;")
+            div(class="panel panel-default", id="bootstrap-override")
+              a(href="/", id="bootstrap-override")
+                div(class="panel-heading", style="text-align: center;")
+                  h4=HospitalName + " Emergency Room Queue"
+              form(action="", method="post")    
+                div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
+                  button(type="submit", name="PatientStatus", value="1", class="btn btn-outline-primary") +OMEGA
+                  button(type="submit", name="PatientStatus", value="2", class="btn btn-outline-secondary") +ALPHA
+                  button(type="submit", name="PatientStatus", value="3", class="btn btn-outline-success") +BRAVO
+                  button(type="submit", name="PatientStatus", value="4", class="btn btn-outline-info") +CHARLIE
+                  button(type="submit", name="PatientStatus", value="5", class="btn btn-outline-warning") +DELTA
+                  button(type="submit", name="PatientStatus", value="6", class="btn btn-outline-danger") +ECHO              
+              thead
+                tr
+                  th(colspan=3, style="text-align: center; vertical-align: middle;") Recent Activity
+              tbody(id="bootstrap-override")
+                for logentry in LogData
+                  form(action="", method="post")
+                    - var phrase;
+                    - if(logentry.PreviousState == 'N' && logentry.NewState == 'A') phrase = " added to queue at "
+                    - else if(logentry.PreviousState == 'A' && logentry.NewState == 'R') phrase = " removed from queue at "
+                    - else if(logentry.PreviousState == 'A' && logentry.NewState == 'D') phrase = " deleted from system at "
+                    tr
+                      input(type="text", name="LogID", value=logentry.LogID, style="display:none;")
+                      td(colspan=2)="Patient " + logentry.PatientID + phrase + logentry.LogTime
+                      td(colspan=1)
+                        button(type="submit", name="PatientStatus", value=18, class="btn btn-outline-secondary undo-link") Undo
+              thead
+                tr
+                  th(style="text-align: center; vertical-align: middle;") Patient ID
+                  th(style="text-align: center; vertical-align: middle;") Admission Time
+                  th(style="text-align: center; vertical-align: middle;") Urgency Category
+              for patient in patients
+                -  var token;
+                -  if(patient.PatientStatus == 1) token = "primary";
+                -  else if(patient.PatientStatus == 2) token = "secondary";
+                -  else if(patient.PatientStatus == 3) token = "success";
+                -  else if(patient.PatientStatus == 4) token = "info";
+                -  else if(patient.PatientStatus == 5) token = "warning";
+                -  else if(patient.PatientStatus == 6) token = "danger";
+                tbody(id="bootstrap-override") 
+                  form(action="", method="post")
+                    tr
+                      input(type="text", name="PatientID", value=patient.PatientID, style="display:none;")
+                      td(id="delete-override")
+                        button(type="submit", name="PatientStatus", value=patient.PatientStatus + 12, class="btn btn-outline-secondary delete")
+                          img(src="/images/clear.svg")
+                        span=" " + patient.PatientID
+                      td=patient.WaitTimeStart
+                      -  var urgency;
+                      -  if(patient.PatientStatus == 1) urgency = "OMEGA";
+                      -  else if(patient.PatientStatus == 2) urgency = "ALPHA";
+                      -  else if(patient.PatientStatus == 3) urgency = "BRAVO";
+                      -  else if(patient.PatientStatus == 4) urgency = "CHARLIE";
+                      -  else if(patient.PatientStatus == 5) urgency = "DELTA";
+                      -  else if(patient.PatientStatus == 6) urgency = "ECHO";
+                      td
+                        button(type="submit", name="PatientStatus", value=patient.PatientStatus + 6, class="btn btn-outline-" + token)="-" + urgency
       .col-md-2
-      .col-md-8
-        table(class="table table-hover", style="text-align: center;")
-          div(class="panel panel-default", id="bootstrap-override")
-            a(href="/", id="bootstrap-override")
-              div(class="panel-heading", style="text-align: center;")
-                h4=HospitalName + " Emergency Room Queue"
-            form(action="", method="post")    
-              div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
-                button(type="submit", name="PatientStatus", value="1", class="btn btn-outline-primary") +OMEGA
-                button(type="submit", name="PatientStatus", value="2", class="btn btn-outline-secondary") +ALPHA
-                button(type="submit", name="PatientStatus", value="3", class="btn btn-outline-success") +BRAVO
-                button(type="submit", name="PatientStatus", value="4", class="btn btn-outline-info") +CHARLIE
-                button(type="submit", name="PatientStatus", value="5", class="btn btn-outline-warning") +DELTA
-                button(type="submit", name="PatientStatus", value="6", class="btn btn-outline-danger") +ECHO              
-            thead
-              tr
-                th(colspan=3, style="text-align: center; vertical-align: middle;") Recent Activity
-            tbody(id="bootstrap-override")
-              for logentry in LogData
-                form(action="", method="post")
-                  - var phrase;
-                  - if(logentry.PreviousState == 'N' && logentry.NewState == 'A') phrase = " added to queue at "
-                  - else if(logentry.PreviousState == 'A' && logentry.NewState == 'R') phrase = " removed from queue at "
-                  - else if(logentry.PreviousState == 'A' && logentry.NewState == 'D') phrase = " deleted from system at "
-                  tr
-                    input(type="text", name="LogID", value=logentry.LogID, style="display:none;")
-                    td(colspan=2)="Patient " + logentry.PatientID + phrase + logentry.LogTime
-                    td(colspan=1)
-                      button(type="submit", name="PatientStatus", value=18, class="btn btn-outline-secondary undo-link") Undo
-            thead
-              tr
-                th(style="text-align: center; vertical-align: middle;") Patient ID
-                th(style="text-align: center; vertical-align: middle;") Admission Time
-                th(style="text-align: center; vertical-align: middle;") Urgency Category
-            for patient in patients
-              -  var token;
-              -  if(patient.PatientStatus == 1) token = "primary";
-              -  else if(patient.PatientStatus == 2) token = "secondary";
-              -  else if(patient.PatientStatus == 3) token = "success";
-              -  else if(patient.PatientStatus == 4) token = "info";
-              -  else if(patient.PatientStatus == 5) token = "warning";
-              -  else if(patient.PatientStatus == 6) token = "danger";
-              tbody(id="bootstrap-override") 
-                form(action="", method="post")
-                  tr
-                    input(type="text", name="PatientID", value=patient.PatientID, style="display:none;")
-                    td(id="delete-override")
-                      button(type="submit", name="PatientStatus", value=patient.PatientStatus + 12, class="btn btn-outline-secondary delete")
-                        img(src="/images/clear.svg")
-                      span=" " + patient.PatientID
-                    td=patient.WaitTimeStart
-                    -  var urgency;
-                    -  if(patient.PatientStatus == 1) urgency = "OMEGA";
-                    -  else if(patient.PatientStatus == 2) urgency = "ALPHA";
-                    -  else if(patient.PatientStatus == 3) urgency = "BRAVO";
-                    -  else if(patient.PatientStatus == 4) urgency = "CHARLIE";
-                    -  else if(patient.PatientStatus == 5) urgency = "DELTA";
-                    -  else if(patient.PatientStatus == 6) urgency = "ECHO";
-                    td
-                      button(type="submit", name="PatientStatus", value=patient.PatientStatus + 6, class="btn btn-outline-" + token)="-" + urgency
-    .col-md-2
