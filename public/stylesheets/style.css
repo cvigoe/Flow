@@ -7,6 +7,10 @@
   background-color: #f0f0f0;
 }
 
+h4{
+  margin-top: 0.5rem;
+}
+
 table {
   table-layout: fixed;
 }

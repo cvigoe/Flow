@@ -41,8 +41,21 @@ router.get('/', function (req, res, next) {
 	connection.query('SELECT * FROM WaitingRooms;', function (err, rows, fields) {
 		if(err) throw err
 	  	calculateTimes(rows);
+	    var categories = {"omega": {}, "alpha": {}, "bravo": {}, "charlie": {}, "delta": {}, "echo": {} };
+
+	    for(var hospital in rows){
+	    	categories["omega"][rows[hospital].HospitalName] = rows[hospital].OmegaTime;
+	    	categories["alpha"][rows[hospital].HospitalName] = rows[hospital].AlphaTime;
+	    	categories["bravo"][rows[hospital].HospitalName] = rows[hospital].BravoTime;
+	    	categories["charlie"][rows[hospital].HospitalName] = rows[hospital].CharlieTime;
+	    	categories["delta"][rows[hospital].HospitalName] = rows[hospital].DeltaTime;
+	    	categories["echo"][rows[hospital].HospitalName] = rows[hospital].EchoTime;
+	    }
+	    console.log("\n\n");
+	    console.dir(categories);
+	    console.log("\n\n");
 	  	console.log("GET home page:\n")
-	  	response.render('index', { data: rows });
+	  	response.render('index', { data: rows, categories: categories });
   	});
 });  
 
