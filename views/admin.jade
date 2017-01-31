@@ -5,7 +5,8 @@ block content
       .container
         .card(id="message")
           button(class="btn btn-outline-secondary hide", id="hide")
-            img(src="/images/clear.svg")
+            img(id="colour", src="/images/clear.svg")
+            img(id="white", src="/images/whiteclear.svg", style="display: none;")
           .card-block 
             p
               span(id="1st-line")="This page displays the current Accident & Emergency Waiting Room queue." 
@@ -63,7 +64,8 @@ block content
                       input(type="text", name="PatientID", value=patient.PatientID, style="display:none;")
                       td(id="delete-override")
                         button(type="submit", name="PatientStatus", value=patient.PatientStatus + 12, class="btn btn-outline-secondary delete")
-                          img(src="/images/clear.svg")
+                          img(id="colour", src="/images/clear.svg")
+                          img(id="white", src="/images/whiteclear.svg", style="display: none;")
                         span=" " + patient.PatientID
                       td=patient.WaitTimeStart
                       -  var urgency;

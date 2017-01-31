@@ -42,7 +42,7 @@ position: absolute;
 
 img{
   height: 28px;
-  opacity: 0.2;
+  /*opacity: 0.2;*/
 }
 
 .hide img {
@@ -93,4 +93,15 @@ img{
     position: relative;
     top: 11px;
     left: 2%;  
+}
+
+.rank img{
+  opacity: 1;
+}
+
+#bootstrap-override-ranks button{
+  width: 110px;
+  float: none;
+  font-size: 0.85rem;
+  padding: 0.5rem 0rem;
 }
