@@ -41,19 +41,20 @@ router.get('/', function (req, res, next) {
 	connection.query('SELECT * FROM WaitingRooms;', function (err, rows, fields) {
 		if(err) throw err
 	  	calculateTimes(rows);
-	    var categories = {"omega": {}, "alpha": {}, "bravo": {}, "charlie": {}, "delta": {}, "echo": {} };
+	    var categories = {"omega": [], "alpha": [], "bravo": [], "charlie": [], "delta": [], "echo": [] };
 
 	    for(var hospital in rows){
-	    	categories["omega"][rows[hospital].HospitalName] = rows[hospital].OmegaTime;
-	    	categories["alpha"][rows[hospital].HospitalName] = rows[hospital].AlphaTime;
-	    	categories["bravo"][rows[hospital].HospitalName] = rows[hospital].BravoTime;
-	    	categories["charlie"][rows[hospital].HospitalName] = rows[hospital].CharlieTime;
-	    	categories["delta"][rows[hospital].HospitalName] = rows[hospital].DeltaTime;
-	    	categories["echo"][rows[hospital].HospitalName] = rows[hospital].EchoTime;
+	    	categories["omega"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].OmegaTime});
+	    	categories["alpha"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].AlphaTime});
+	    	categories["bravo"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].BravoTime});
+	    	categories["charlie"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].CharlieTime});
+	    	categories["delta"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].DeltaTime});
+	    	categories["echo"].push({ "name": rows[hospital].HospitalName, "time": rows[hospital].EchoTime});
 	    }
-	    console.log("\n\n");
-	    console.dir(categories);
-	    console.log("\n\n");
+
+	    for(var category in categories){
+	    	categories[category].sort(function(a,b) {return (a.time > b.time) ? 1 : ((b.time > a.time) ? -1 : 0);}); 
+	    }
 	  	console.log("GET home page:\n")
 	  	response.render('index', { data: rows, categories: categories });
   	});

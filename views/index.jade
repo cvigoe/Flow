@@ -44,20 +44,22 @@ block content
     .row                  
       div(class="col-md-2")
       div(class="col-md-8")
-        for values, category in categories
-          div(class="card card-outline", id=category, style="display: none;")
-            table(class="table table-sucess table-hover" data-toggle="table")
+        for category, i in categories
+          - console.log(category)
+          - console.log(i)
+          div(class="card card-outline", id=i, style="display: none;")
+            table(class="table table-sucess table-hover")
               thead
-                div(style="text-align: center; margin-top: .5rem;", class="panel-heading")
-                  h4(class="text-uppercase")=category
                 tr
                   th(style="text-align: center; vertical-align: middle;")="Hospital"
-                  th(style="text-align: center; vertical-align: middle;", data-sortable="true")="Incoming Patient Wait Time"
+                  th(style="text-align: center; vertical-align: middle;")="Incoming Patient Wait Time"
               tbody(style="text-align: center;")
-                for key, value in values
+                for hospital in category
+                  - console.log("\t" + hospital.name)
+                  - console.log("\t" + hospital.time)
                   tr
-                    td=value
-                    td=key
+                    td=hospital.name
+                    td=hospital.time
       div(class="col-md-2")
     .row
       for hospital in data
