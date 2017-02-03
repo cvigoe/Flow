@@ -29,16 +29,11 @@ block content
           li(class="nav-item centered-item")
             a(class="nav-link" data-toggle="tab" href="#delta") DELTA
           li(class="nav-item centered-item")
-            a(class="nav-link" data-toggle="tab" href="#echo") ECHO
-          li(class="nav-item centered-item")
-            a(class="nav-link" data-toggle="tab" href="#hide-pills") Hide
-
-                  
+            a(class="nav-link" data-toggle="tab" href="#echo") ECHO                  
     .row                  
       div(class="col-md-2")
       div(class="col-md-8")
         .tab-content
-          div(class="tab-pane" id="hide-pills" role="tabpanel")
           for category, i in categories
             div(class="tab-pane" id=i role="tabpanel")
               div(class="card card-outline", id=i)
