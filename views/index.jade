@@ -15,21 +15,22 @@ block content
           li="the number of patients of a particualr triage category or higher (more urgent) already in the queue"
         p="The estimated Incoming Patient Wait Time is indicated in minutes."
     .div(class="row pills-centered")
-      ul(class="nav nav-pills pills-centered")
-        li(class="nav-item centered-item")
-          a(class="nav-link pills-centered" data-toggle="tab" href="#omega") OMEGA
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#alpha") ALPHA
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#bravo") BRAVO
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#charlie") CHARLIE
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#delta") DELTA
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#echo") ECHO
-        li(class="nav-item centered-item")
-          a(class="nav-link" data-toggle="tab" href="#hide-pills") Hide
+      .text-center
+        ul(class="nav nav-pills pills-centered")
+          li(class="nav-item centered-item")
+            a(class="nav-link pills-centered" data-toggle="tab" href="#omega") OMEGA
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#alpha") ALPHA
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#bravo") BRAVO
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#charlie") CHARLIE
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#delta") DELTA
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#echo") ECHO
+          li(class="nav-item centered-item")
+            a(class="nav-link" data-toggle="tab" href="#hide-pills") Hide
 
                   
     .row                  
@@ -39,6 +40,9 @@ block content
           div(class="tab-pane" id="hide-pills" role="tabpanel")
           for category, i in categories
             div(class="tab-pane" id=i role="tabpanel")
+              button(class="btn btn-outline-secondary hide")
+                img(id="colour", src="/images/clear.svg")
+                img(id="white", src="/images/whiteclear.svg", style="display: none;")
               div(class="card card-outline", id=i)
                 table(class="table table-sucess table-hover")
                   thead

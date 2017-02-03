@@ -99,9 +99,27 @@ img{
   text-align: center;
 }
 
+
+/*between 338px and 992px:*/
+@media only screen and (max-width: 992px) and (min-width: 338px){
+  .pills-centered{
+    width: 319.2px; /*for smallest screens*/
+    margin: auto;
+  }
+}
+
+
+
 .pills-centered ul{
   margin-bottom: .5em;
   display: inline-block;
+  padding-left: 27px;
+}
+
+.pills-centered ul{
+  margin-bottom: .5em;
+  display: inline-block;
+  padding-left: 0px;
 }
 
 .pills-centered a{
