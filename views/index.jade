@@ -1,6 +1,6 @@
 extends layout
 block content
-  
+  script(src="/javascripts/tabs.js")
   .container
     .card(id="message")
       button(class="btn btn-outline-secondary hide", id="hide")
@@ -14,6 +14,7 @@ block content
           li="the number of staff on duty" 
           li="the number of patients of a particualr triage category or higher (more urgent) already in the queue"
         p="The estimated Incoming Patient Wait Time is indicated in minutes."
+        p="The Severity Adjusted Wait Time figure indicates the overall healthcare demand of a waiting room. It is calculated by summing the total number of estimated wait minutes for every patient currently in the waiting room queue and applying a higher weighting to patients of a higher severity triage category. It can be thought of as the emergency room equivalent of the 'man-hour', scaled to reflect the varying severities of the triage categories."
     .div(class="row pills-centered")
       .text-center
         ul(class="nav nav-pills pills-centered")
