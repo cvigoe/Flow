@@ -66,6 +66,12 @@ img{
   text-decoration: none;
 }
 
+@media only screen and (max-width: 468px){
+  #clock {
+   display: none; 
+  }
+}
+
 #clock{
     float: right;
     position: relative;
@@ -93,6 +99,22 @@ img{
     position: relative;
     top: 11px;
     left: 2%;  
+}
+
+#about-link {
+    text-decoration: none;
+    position: relative;
+    top: 11px;
+    left: 4%;  
+}
+
+@media only screen and (max-width: 800px){
+  #help-link {
+   left: 6%;
+  }
+  #about-link {
+   left: 12%;
+  }  
 }
 
 .pills-centered{

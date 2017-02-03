@@ -33,6 +33,11 @@ connection.query('USE heroku_5aad6cee4f2d147;', function (err, rows, fields) {
   	console.log('Using heroku_5aad6cee4f2d147 DB.')
 })
 
+// GET about page
+router.get('/about', function (req, res, next){
+	res.render('about');
+})
+
 
 // GET home page.
 router.get('/', function (req, res, next) {
