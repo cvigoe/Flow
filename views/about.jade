@@ -1,6 +1,12 @@
 extends layout
 block content
   .container
+    .card(id="message")
+      button(class="btn btn-outline-secondary hide", id="hide")
+        img(id="colour", src="/images/clear.svg")
+        img(id="white", src="/images/whiteclear.svg", style="display: none;")
+      .card-block 
+        p(id='bootstrap-override') This dialogue box will display help and information relevant to each page. To navigate back to the hospital summaries view, <a href='careflow.herokuapp.com'> click here </a>. Alternatively, clicking the CareFlow logo in the top left will always navigate to the hospital summaries view.
     .row
       div(class="col-md-2")
       div(class="col-md-8")
