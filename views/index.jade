@@ -1,65 +1,55 @@
 extends layout
 block content
-  script(src="/javascripts/mainbtns.js")
+  
   .container
     .card(id="message")
       button(class="btn btn-outline-secondary hide", id="hide")
         img(id="colour", src="/images/clear.svg")
         img(id="white", src="/images/whiteclear.svg", style="display: none;")
       .card-block 
-        p(id='bootstrap-override') This page displays real-time occupancy data for each of the 11 Accident & Emergency Waiting Rooms included in the East Hospital Group. The estimated Incoming Patient Wait Time for a particular <a href='http://www.phecit.ie/Images/PHECC/Clinical%20resources/STN001%20EMS%20Priority%20Dispatch%20Standard%20V4.pdf'> triage category </a> is based on:
+        p(id='bootstrap-override') This page displays real-time occupancy data for each of the 11 Accident & Emergency Waiting Rooms in the East Hospital Group. The estimated Incoming Patient Wait Time for a particular <a href='http://www.phecit.ie/Images/PHECC/Clinical%20resources/STN001%20EMS%20Priority%20Dispatch%20Standard%20V4.pdf'> triage category </a> is based on:
         ul
-          li="the hospital's average initial treatment time for a patient in a particular triage category;"
-          li="the average efficiency of the hospital staff;"
-          li="the number of staff on duty;" 
-          li="and how many patients of a particualr triage category or higher (more urgent) are already in the queue."
+          li="the hospital's average initial treatment time for a patient in a particular triage category"
+          li="the average efficiency of the hospital staff"
+          li="the number of staff on duty" 
+          li="the number of patients of a particualr triage category or higher (more urgent) already in the queue"
         p="The estimated Incoming Patient Wait Time is indicated in minutes."
-    .row
-      form()    
-                div(class="btn-group rank", id="bootstrap-override-ranks", style="text-align: center;")
-                  button(type="button", id="omegabtn", class="btn btn-outline-primary")
-                    span="OMEGA "
-                    img(id="colour", src="/images/rankO.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")
-                  button(type="button", id="alphabtn" class="btn btn-outline-secondary")
-                    span="ALPHA "
-                    img(id="colour", src="/images/rankA.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")
-                  button(type="button", id="bravobtn" class="btn btn-outline-success")
-                    span="BRAVO "
-                    img(id="colour", src="/images/rankB.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")           
-                  button(type="button", id="charliebtn" class="btn btn-outline-info")
-                    span="CHARLIE "
-                    img(id="colour", src="/images/rankC.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")           
-                  button(type="button", id="deltabtn" class="btn btn-outline-warning")
-                    span="DELTA "
-                    img(id="colour", src="/images/rankD.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")           
-                  button(type="button", id="echobtn" class="btn btn-outline-danger")
-                    span="ECHO "
-                    img(id="colour", src="/images/rankE.svg")
-                    img(id="white", src="/images/whiterank.svg", style="display: none;")           
+    .div(class="row pills-centered")
+      ul(class="nav nav-pills pills-centered")
+        li(class="nav-item")
+          a(class="nav-link pills-centered" data-toggle="tab" href="#omega") OMEGA
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#alpha") ALPHA
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#bravo") BRAVO
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#charlie") CHARLIE
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#delta") DELTA
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#echo") ECHO
+        li(class="nav-item")
+          a(class="nav-link" data-toggle="tab" href="#hide-pills") Hide
+
+                  
     .row                  
       div(class="col-md-2")
       div(class="col-md-8")
-        for category, i in categories
-          - console.log(category)
-          - console.log(i)
-          div(class="card card-outline", id=i, style="display: none;")
-            table(class="table table-sucess table-hover")
-              thead
-                tr
-                  th(style="text-align: center; vertical-align: middle;")="Hospital"
-                  th(style="text-align: center; vertical-align: middle;")="Incoming Patient Wait Time"
-              tbody(style="text-align: center;")
-                for hospital in category
-                  - console.log("\t" + hospital.name)
-                  - console.log("\t" + hospital.time)
-                  tr
-                    td=hospital.name
-                    td=hospital.time
+        .tab-content
+          div(class="tab-pane" id="hide-pills" role="tabpanel")
+          for category, i in categories
+            div(class="tab-pane" id=i role="tabpanel")
+              div(class="card card-outline", id=i)
+                table(class="table table-sucess table-hover")
+                  thead
+                    tr
+                      th(style="text-align: center; vertical-align: middle;")="Hospital"
+                      th(style="text-align: center; vertical-align: middle;")="Incoming Patient Wait Time"
+                  tbody(style="text-align: center;")
+                    for hospital in category
+                      tr
+                        td=hospital.name
+                        td=hospital.time
       div(class="col-md-2")
     .row
       for hospital in data

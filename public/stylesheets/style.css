@@ -95,13 +95,22 @@ img{
     left: 2%;  
 }
 
-.rank img{
-  opacity: 1;
+.pills-centered{
+  text-align: center;
 }
 
-#bootstrap-override-ranks button{
-  width: 110px;
-  float: none;
-  font-size: 0.85rem;
-  padding: 0.5rem 0rem;
+.pills-centered ul{
+  margin-bottom: .5em;
+  display: inline-block;
+}
+
+.pills-centered a{
+      border: 1px solid #0275d8;
+    border-radius: 3px;
+    width: 100px;
+}
+
+#hide-pills a{
+  background-color: white;
+  color: #0275d8;
 }
