@@ -23,7 +23,7 @@ block content
                 div(class="panel-heading", style="text-align: center;")
                   h4=HospitalName + " Accident & Emergency Waiting Room Queue"
               form(action="", method="post")    
-                div(class="btn-group btn-group", id="bootstrap-override", style="text-align: center;")
+                div( id="bootstrap-override", style="text-align: center;")
                   button(type="submit", name="PatientStatus", value="1", class="btn btn-outline-primary") +OMEGA
                   button(type="submit", name="PatientStatus", value="2", class="btn btn-outline-secondary") +ALPHA
                   button(type="submit", name="PatientStatus", value="3", class="btn btn-outline-success") +BRAVO

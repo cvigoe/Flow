@@ -28,12 +28,5 @@ function updateClock ( )
 
 $(document).ready(function()
 {
-  window.setInterval(function(){
-    if($('#clock').css('float') == 'none'){
-      console.log("Too small for the clock!");
-    }else{
-      window.setInterval(function(){$("#clock").fadeIn(1000)}, 1000);
-    }
-    setInterval('updateClock()', 1000);
-  }, 10);
+   setInterval('updateClock()', 1000);
 });

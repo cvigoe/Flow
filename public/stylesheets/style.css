@@ -58,6 +58,19 @@ img{
  margin-top: -0.8%;
 }
 
+#bootstrap-override{
+  margin-bottom: 13px;
+}
+
+#bootstrap-override button{
+  /*padding: .5rem 0rem;*/
+  margin: 1px;
+  width: 95px;
+  float: initial;
+  font-size: 0.85rem;
+  padding: 0.5rem 0rem;
+}
+
 #bootstrap-override td{
   vertical-align: middle;
 }
@@ -66,19 +79,16 @@ img{
   text-decoration: none;
 }
 
+@media only screen and (max-width: 468px){
+  #clock {
+   display: none; 
+  }
+}
+
 #clock{
-    display: none;
     float: right;
     position: relative;
     top: 18px;  
-}
-
-@media (max-width: 468px){
-  #clock {
-    opacity: 0;
-   display: none;
-   float: none;
-  }
 }
 
 .table > thead > tr > th {
@@ -101,22 +111,22 @@ img{
     text-decoration: none;
     position: relative;
     top: 11px;
-    left: 2%;  
+    left: 6%;  
 }
 
 #about-link {
     text-decoration: none;
     position: relative;
     top: 11px;
-    left: 4%;  
+    left: 12%;  
 }
 
 @media only screen and (max-width: 800px){
   #help-link {
-   left: 6%;
+   left: 2%;
   }
   #about-link {
-   left: 12%;
+   left: 4%;
   }  
 }
 
