@@ -111,22 +111,26 @@ img{
     text-decoration: none;
     position: relative;
     top: 11px;
-    left: 6%;  
+    left: 2%;  
+    float: none;
 }
 
 #about-link {
     text-decoration: none;
     position: relative;
     top: 11px;
-    left: 12%;  
+    left: 4%;  
+    float: none;
 }
 
-@media only screen and (max-width: 800px){
+@media only screen and (max-width: 468px){
   #help-link {
-   left: 2%;
+   left: -2px;
+   float: right;
   }
   #about-link {
-   left: 4%;
+   left: -22px;
+   float: right;
   }  
 }
 
